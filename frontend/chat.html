@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="chat-container">
+
+        <!-- LEFT SIDE -->
+        <div class="sidebar">
+
+            <div class="profile">
+                <h2>Chat Application</h2>
+                <p id="currentUser">Welcome User</p>
+            </div>
+
+            <div class="search-box">
+                <input type="text" placeholder="Search users...">
+            </div>
+
+            <div class="user-list">
+
+                <div class="user-item active">
+                    <div class="user-avatar">A</div>
+                    <div>
+                        <h4>Anu</h4>
+                        <p>Online</p>
+                    </div>
+                </div>
+
+                <div class="user-item">
+                    <div class="user-avatar">P</div>
+                    <div>
+                        <h4>Priya</h4>
+                        <p>Online</p>
+                    </div>
+                </div>
+
+                <div class="user-item">
+                    <div class="user-avatar">D</div>
+                    <div>
+                        <h4>Divya</h4>
+                        <p>Offline</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <button class="logout-btn" onclick="logout()">Logout</button>
+
+        </div>
+
+
+        <!-- RIGHT SIDE -->
+        <div class="chat-area">
+
+            <div class="chat-header">
+
+                <div>
+                    <h2>Anu</h2>
+                    <p>Online</p>
+                </div>
+
+                <button class="group-btn" onclick="showGroupMessage()">
+                    Group Chat
+                </button>
+
+            </div>
+
+
+            <!-- MESSAGES -->
+            <div class="messages" id="messages">
+
+                <div class="message received">
+                    <span class="message-user">Anu</span>
+                    <p>Hello! How are you?</p>
+                    <small>10:30 AM</small>
+                </div>
+
+                <div class="message sent">
+                    <span class="message-user">You</span>
+                    <p>I'm good! How about you?</p>
+                    <small>10:31 AM</small>
+                </div>
+
+                <div class="message received">
+                    <span class="message-user">Anu</span>
+                    <p>I'm doing great!</p>
+                    <small>10:32 AM</small>
+                </div>
+
+            </div>
+
+
+            <!-- MESSAGE INPUT -->
+            <div class="message-input">
+
+                <input
+                    type="text"
+                    id="messageInput"
+                    placeholder="Type your message..."
+                >
+
+                <button onclick="sendMessage()">Send</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
