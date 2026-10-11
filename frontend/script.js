@@ -1,135 +1,119 @@
-// ============================
-// REGISTER
-// ============================
 
-const registerForm = document.getElementById("registerForm");
+const API_URL = "http://localhost:5000";
 
-if (registerForm) {
+const loginTab = document.getElementById("loginTab");
+const registerTab = document.getElementById("registerTab");
+const switchButton = document.getElementById("switchButton");
+const authForm = document.getElementById("authForm");
 
-    registerForm.addEventListener("submit", function(event) {
+const nameField = document.getElementById("nameField");
+const phoneField = document.getElementById("phoneField");
+const nameInput = document.getElementById("name");
+const phoneInput = document.getElementById("phone");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
 
-        event.preventDefault();
+const formTitle = document.getElementById("formTitle");
+const formSubtitle = document.getElementById("formSubtitle");
+const submitButton = document.getElementById("submitButton");
+const switchLabel = document.getElementById("switchLabel");
+const message = document.getElementById("message");
 
-        const name = document.getElementById("registerName").value;
-        const email = document.getElementById("registerEmail").value;
-        const phone = document.getElementById("registerPhone").value;
-        const password = document.getElementById("registerPassword").value;
+let isRegistering = false;
 
-        alert(
-            "Registration successful!\n\n" +
-            "Name: " + name +
-            "\nEmail: " + email
-        );
-
-        window.location.href = "index.html";
-    });
+function showMessage(text, success = false) {
+    message.textContent = text;
+    message.style.color = success ? "#16803d" : "#c0392b";
 }
 
+function setMode(registerMode) {
+    isRegistering = registerMode;
+    authForm.reset();
+    showMessage("");
 
-// ============================
-// LOGIN
-// ============================
+    nameField.classList.toggle("hidden", !registerMode);
+    phoneField.classList.toggle("hidden", !registerMode);
+    nameInput.required = registerMode;
 
-const loginForm = document.getElementById("loginForm");
+    loginTab.classList.toggle("active", !registerMode);
+    registerTab.classList.toggle("active", registerMode);
 
-if (loginForm) {
+    formTitle.textContent = registerMode
+        ? "Create your account"
+        : "Welcome back!";
 
-    loginForm.addEventListener("submit", function(event) {
+    formSubtitle.textContent = registerMode
+        ? "Join Connect and start chatting."
+        : "Login to continue chatting.";
 
-        event.preventDefault();
+    submitButton.textContent = registerMode ? "Create Account" : "Login";
 
-        const email = document.getElementById("loginEmail").value;
-        const password = document.getElementById("loginPassword").value;
+    switchLabel.textContent = registerMode
+        ? "Already have an account?"
+        : "Don't have an account?";
 
-        if (email !== "" && password !== "") {
+    switchButton.textContent = registerMode ? "Login" : "Register";
+}
 
-            localStorage.setItem("currentUser", email);
+loginTab.addEventListener("click", () => setMode(false));
+registerTab.addEventListener("click", () => setMode(true));
 
-            window.location.href = "chat.html";
+switchButton.addEventListener("click", () => {
+    setMode(!isRegistering);
+});
 
-        } else {
+authForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    showMessage("Please wait...");
 
-            alert("Please enter email and password.");
+    const endpoint = isRegistering ? "/api/register" : "/api/login";
 
+    const data = {
+        email: emailInput.value.trim(),
+        password: passwordInput.value
+    };
+
+    if (isRegistering) {
+        data.name = nameInput.value.trim();
+        data.phone = phoneInput.value.trim();
+    }
+
+    try {
+        const response = await fetch(API_URL + endpoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            showMessage(result.message || "Something went wrong.");
+            return;
         }
-    });
-}
 
+        showMessage(result.message, true);
 
-// ============================
-// SEND MESSAGE
-// ============================
+        if (!isRegistering) {
+            sessionStorage.setItem(
+                "chatUser",
+                JSON.stringify(result.user)
+            );
 
-function sendMessage() {
-
-    const input = document.getElementById("messageInput");
-    const messages = document.getElementById("messages");
-
-    if (!input || !messages) {
-        return;
+            setTimeout(() => {
+                window.location.href = "chat.html";
+            }, 700);
+        } else {
+            authForm.reset();
+        }
+    } catch (error) {
+        console.error(error);
+        showMessage(
+            "Cannot connect to the server. Make sure your backend is running."
+        );
     }
+});
 
-    const messageText = input.value.trim();
-
-    if (messageText === "") {
-        return;
-    }
-
-    const messageDiv = document.createElement("div");
-
-    messageDiv.classList.add("message", "sent");
-
-    messageDiv.innerHTML = `
-        <span class="message-user">You</span>
-        <p>${messageText}</p>
-        <small>Now</small>
-    `;
-
-    messages.appendChild(messageDiv);
-
-    input.value = "";
-
-    messages.scrollTop = messages.scrollHeight;
-}
-
-
-// ============================
-// LOGOUT
-// ============================
-
-function logout() {
-
-    localStorage.removeItem("currentUser");
-
-    window.location.href = "index.html";
-}
-
-
-// ============================
-// GROUP CHAT
-// ============================
-
-function showGroupMessage() {
-
-    alert("Group Chat feature will be connected to the backend later.");
-}
-
-
-// ============================
-// ADMIN
-// ============================
-
-function manageUsers() {
-
-    alert("User management will be connected to the backend.");
-}
-
-function manageChats() {
-
-    alert("Chat management will be connected to the backend.");
-}
-
-function manageGroups() {
-
-    alert("Group management will be connected to the backend.");
-}
+setMode(false);
